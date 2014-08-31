@@ -1,0 +1,23 @@
+{
+  "name": "contrib-dashboard",
+  "version": "0.0.0",
+  "description": "Scrape a collection of d.o. users to get their contributinos.",
+  "main": "app.js",
+  "scripts": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:thinkshout/drupal-dashboard.git"
+  },
+  "author": "levelos",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/thinkshout/drupal-dashboard/issues"
+  },
+  "homepage": "https://github.com/thinkshout/drupal-dashboard",
+  "dependencies" : {
+    "request"    : "latest",
+    "cheerio"    : "latest",
+    "async"      : "latest"
+  }
+}
