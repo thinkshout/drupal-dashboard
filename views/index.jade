@@ -1,0 +1,13 @@
+extends layout
+
+block content
+
+  h1 ThinkShout Drupal Contributions
+  p The following is a list of ThinKShout's Drupal contributions scrabed from drupal.org.
+
+  table
+      each project, key in projects
+          tr
+            td
+              a(href =project.url)= project.name
+            td= project.latest

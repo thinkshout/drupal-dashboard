@@ -1,78 +1,57 @@
-var request = require("request");
-var cheerio = require("cheerio");
-var async = require('async');
 var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');
+var routes = require('./routes/index');
+
 var app = express();
 
-var team = [
-  'seanberto',
-  'levelos',
-  'gcb',
-  'tauno',
-  'nadavoid',
-  'MadouPDX',
-  'ruscoe',
-  '6c1',
-  'heypaxton'
-];
+// view engine setup
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'jade');
 
-var base_url = 'https://drupal.org/';
-var base_user_url = base_url + 'u/';
+// uncomment after placing your favicon in /public
+//app.use(favicon(__dirname + '/public/favicon.ico'));
+app.use(logger('dev'));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
 
-var projects = {};
+app.use('/', routes);
 
-app.get('/', function(req, res) {
-  var content = loadData();
-  res.send(projects);
+// catch 404 and forward to error handler
+app.use(function(req, res, next) {
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
-var server = app.listen(3000, function() {
-  console.log('Listening on port %d', server.address().port);
+// error handlers
+
+// development error handler
+// will print stacktrace
+if (app.get('env') === 'development') {
+    app.use(function(err, req, res, next) {
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: err
+        });
+    });
+}
+
+// production error handler
+// no stacktraces leaked to user
+app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+        message: err.message,
+        error: {}
+    });
 });
 
-function loadData() {
-  async.each(team, loadUserProjects, function(err) {
-    async.each(Object.keys(projects), loadProjects, function(err) {
-//      console.log(projects.sort());
-    });
-  });
-}
 
-function loadUserProjects(name, callback) {
-  request(base_user_url + name, function (err, resp, html) {
-    if (err) throw err;
-    $ = cheerio.load(html);
-
-    var $projects = $('h3').filter(function (i, el) {
-      return $(el).html() === 'Projects';
-    }).next().children().find('li');
-
-    $projects.each(function () {
-      var $project_link = $('a', this);
-
-      // There may be some other items in this list.
-      if ($project_link.length === 0) {
-        return false;
-      }
-
-      var project_name = $project_link.attr('href').split('/').pop();
-      projects[project_name] = {
-        'url': $project_link.attr('href'),
-        'name': $project_link.text()
-      };
-    });
-
-    callback();
-  })
-}
-
-function loadProjects(project_name, callback) {
-  if (projects[project_name].latest) return;
-
-  request(base_url + 'project/usage/' + project_name, function(err, resp, html) {
-    $projectDom = cheerio.load(html);
-    $latest = $projectDom('td', $projectDom('#project-usage-project-api tbody tr').first()).last();
-    projects[project_name].latest = $latest.html();
-    callback();
-  });
-}
+module.exports = app;
