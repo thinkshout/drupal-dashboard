@@ -1,13 +1,34 @@
 extends layout
 
 block content
-
+  img(src="https://raw.githubusercontent.com/thinkshout/thinkshout/master/assets/images/thinkshout-id-large.png")
   h1 ThinkShout Drupal Contributions
-  p The following is a list of ThinKShout's Drupal contributions scrabed from drupal.org.
+  p The following is a list of ThinKShout's Drupal contributions scraped from drupal.org.
+
+  h2 Projects
 
   table
+      thead
+          tr
+            th Project
+            th Usage
+            th Date
       each project, key in projects
           tr
             td
               a(href =project.url)= project.name
-            td= project.latest
+            td= project.usage
+            td= project.date
+
+  h2 Team
+
+  table
+      thead
+          tr
+              th User
+              th Commits
+      each user, key in users
+          tr
+              td
+                  a(href =user.url)= key
+              td= user.commits
